@@ -13,7 +13,7 @@ const loaderEl = document.querySelector('.js-loader');
 let currentPage = 1;
 let currentQuery = '';
 const perPage = 15;
-let lightbox;
+let lightbox = new SimpleLightbox('.js-gallery a');
 
 async function onSearchFormSubmit(event) {
   event.preventDefault();
@@ -32,8 +32,8 @@ async function onSearchFormSubmit(event) {
   }
   currentPage = 1;
   galleryEl.innerHTML = '';
-  loadMoreBtnEl.classList.add('.is-hidden');
-  loaderEl.classList.remove('.is-hidden');
+  loadMoreBtnEl.classList.add('is-hidden');
+  loaderEl.classList.remove('is-hidden');
 
   try {
     const imagesData = await fetchPhotosByQuery(
@@ -51,8 +51,8 @@ async function onSearchFormSubmit(event) {
       });
     } else {
       galleryEl.innerHTML = createMarkupItem(imagesData.hits);
-      lightbox = new SimpleLightbox('.js-gallery a');
-      loadMoreBtnEl.classList.remove('.is-hidden');
+      lightbox.refresh();
+      loadMoreBtnEl.classList.remove('is-hidden');
     }
   } catch (error) {
     console.log(error);
@@ -64,14 +64,14 @@ async function onSearchFormSubmit(event) {
     });
   } finally {
     event.target.reset();
-    loaderEl.classList.add('.is-hidden');
+    loaderEl.classList.add('is-hidden');
   }
 }
 
 async function onLoadMoreClick() {
   currentPage += 1;
-  loaderEl.classList.remove('.is-hidden');
-  loadMoreBtnEl.classList.add('.is-hidden');
+  loaderEl.classList.remove('is-hidden');
+  loadMoreBtnEl.classList.add('is-hidden');
 
   try {
     const imagesData = await fetchPhotosByQuery(
@@ -90,7 +90,7 @@ async function onLoadMoreClick() {
       const newMarkup = createMarkupItem(imagesData.hits);
       galleryEl.insertAdjacentHTML('beforeend', newMarkup);
       lightbox.refresh();
-      loadMoreBtnEl.classList.remove('.is-hidden');
+      loadMoreBtnEl.classList.remove('is-hidden');
 
       // Scroll page to the new images
       const { height: cardHeight } =
@@ -109,7 +109,7 @@ async function onLoadMoreClick() {
       timeout: 2000,
     });
   } finally {
-    loaderEl.classList.add('.ssis-hidden');
+    loaderEl.classList.add('is-hidden');
   }
 }
 
