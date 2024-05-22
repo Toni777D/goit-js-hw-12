@@ -14,6 +14,7 @@ let currentPage = 1;
 let currentQuery = '';
 const perPage = 15;
 let lightbox = new SimpleLightbox('.js-gallery a');
+let totalHits = 0;
 
 async function onSearchFormSubmit(event) {
   event.preventDefault();
@@ -31,6 +32,7 @@ async function onSearchFormSubmit(event) {
     return;
   }
   currentPage = 1;
+  totalHits = 0;
   galleryEl.innerHTML = '';
   loadMoreBtnEl.classList.add('is-hidden');
   loaderEl.classList.remove('is-hidden');
@@ -41,7 +43,8 @@ async function onSearchFormSubmit(event) {
       currentPage,
       perPage
     );
-    if (imagesData.totalHits === 0) {
+    totalHits = imagesData.totalHits;
+    if (totalHits === 0) {
       iziToast.show({
         message:
           'Sorry, there are no images matching your search query. Please try again!',
@@ -52,7 +55,10 @@ async function onSearchFormSubmit(event) {
     } else {
       galleryEl.innerHTML = createMarkupItem(imagesData.hits);
       lightbox.refresh();
-      if (imagesData.hits.length < perPage) {
+      if (
+        imagesData.hits.length < perPage ||
+        totalHits <= currentPage * perPage
+      ) {
         loadMoreBtnEl.classList.add('is-hidden');
       } else {
         loadMoreBtnEl.classList.remove('is-hidden');
@@ -83,7 +89,7 @@ async function onLoadMoreClick() {
       currentPage,
       perPage
     );
-    if (imagesData.hits.length === 0) {
+    if (imagesData.hits.length === 0 || totalHits <= currentPage * perPage) {
       iziToast.show({
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
@@ -94,6 +100,8 @@ async function onLoadMoreClick() {
     } else {
       const newMarkup = createMarkupItem(imagesData.hits);
       galleryEl.insertAdjacentHTML('beforeend', newMarkup);
+      lightbox.refresh();
+      loadMoreBtnEl.classList.remove('is-hidden');
 
       // Scroll page to the new images
       const { height: cardHeight } =
