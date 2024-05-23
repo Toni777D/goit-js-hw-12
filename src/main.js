@@ -59,6 +59,12 @@ async function onSearchFormSubmit(event) {
         imagesData.hits.length < perPage ||
         totalHits <= currentPage * perPage
       ) {
+        iziToast.show({
+          message: "We're sorry, but you've reached the end of search results.",
+          position: 'topRight',
+          timeout: 2000,
+          color: 'red',
+        });
         loadMoreBtnEl.classList.add('is-hidden');
       } else {
         loadMoreBtnEl.classList.remove('is-hidden');
@@ -89,6 +95,12 @@ async function onLoadMoreClick() {
       currentPage,
       perPage
     );
+
+    const newMarkup = createMarkupItem(imagesData.hits);
+    galleryEl.insertAdjacentHTML('beforeend', newMarkup);
+    lightbox.refresh();
+    loadMoreBtnEl.classList.remove('is-hidden');
+
     if (imagesData.hits.length === 0 || totalHits <= currentPage * perPage) {
       iziToast.show({
         message: "We're sorry, but you've reached the end of search results.",
@@ -97,20 +109,15 @@ async function onLoadMoreClick() {
         color: 'red',
       });
       loadMoreBtnEl.classList.add('is-hidden');
-    } else {
-      const newMarkup = createMarkupItem(imagesData.hits);
-      galleryEl.insertAdjacentHTML('beforeend', newMarkup);
-      lightbox.refresh();
-      loadMoreBtnEl.classList.remove('is-hidden');
-
-      // Scroll page to the new images
-      const { height: cardHeight } =
-        galleryEl.firstElementChild.getBoundingClientRect();
-      window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
-      });
     }
+
+    // Scroll page to the new images
+    const { height: cardHeight } =
+      galleryEl.firstElementChild.getBoundingClientRect();
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
   } catch (error) {
     console.error(error);
     iziToast.error({
