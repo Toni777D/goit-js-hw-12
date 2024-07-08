@@ -25,7 +25,7 @@ export const createMarkupItem = images => {
         <small class="text-body-comments"><span class="text-body">Comments:</span> <span class="quantity">${comments}</span></small>
         <small class="text-body-downloads"><span class="text-body">Dowloads:</span> <span class="quantity">${downloads}</span></small>
     </div>
- 
+
     </li>
 `;
       }
